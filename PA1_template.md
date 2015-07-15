@@ -1,11 +1,7 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 ## Required Libs
-```{R}
+
+```r
 library(ggplot2)
 library(lattice)
 ```
@@ -14,7 +10,8 @@ library(lattice)
 
 Loading File
 
-```{R}
+
+```r
 #1 loading the data
 file <- read.csv("activity.csv")
 file$date <- as.Date(file$date, "%Y-%m-%d")
@@ -22,30 +19,42 @@ file$date <- as.Date(file$date, "%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 
-```{R,fig.width = 15}
+
+```r
 #2-1 Aggregating the data of steps per day
 totalSteps <- aggregate(steps ~ date,data=file,FUN=sum,na.rm=TRUE)
 
 #2-2 Histogram
 hist(totalSteps$steps,main="number of steps per day",xlab="date",ylab="number of steps",col="blue")
-
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
 
 calc the mean + median
 
-```{R}
+
+```r
 #2-3 calc the mean
 mean(totalSteps$steps)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 #2-3 calc the median
 median(totalSteps$steps)
+```
 
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 Ploting the avergae time interval over a week
-```{R}
+
+```r
 #3-1 Aggregating the data of avg steps per 5 min time interval
 mininterval <- aggregate(file$steps,list(file$interval),FUN=mean,na.rm=TRUE)
 
@@ -53,9 +62,12 @@ mininterval <- aggregate(file$steps,list(file$interval),FUN=mean,na.rm=TRUE)
 plot(mininterval$Group.1, mininterval$x, type="l", xlab="5 min Interval", ylab= "Avergae (mean) per Interval", col="green" , lwd=2)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+
 Max Interval
 
-```{R}
+
+```r
 #3-2 finding max interval
 maxIntervalLine <- which.max(mininterval$x)
 
@@ -64,16 +76,25 @@ maxInterval <- mininterval$Group.1[maxIntervalLine]
 maxInterval
 ```
 
+```
+## [1] 835
+```
+
 ## Imputing missing values
 
 Number of rows with "N" value 
-```{R}
 
+```r
 #4-1 number of rows with NA value 
 length(file$steps[is.na(file$steps)])
 ```
+
+```
+## [1] 2304
+```
 Replacing the NA with average of same time interval
-```{R}
+
+```r
 #4-3 replacing NA value with average on the same 5 min time interval
 imp <- numeric(length(file$steps))
 for(i in  1:length(file$steps))
@@ -93,24 +114,35 @@ file$imp <- imp
 ```
 
 Histogram of total steps per day
-```{R,fig.width = 15}
+
+```r
 #4-4 Aggregating the data of total steps per day
 impSteps <- aggregate(imp ~ date,data=file,FUN=sum,na.rm=TRUE)
 
 #4-4 Histogram
 hist(impSteps$imp,main="number of steps per day",xlab="date",ylab="number of steps",col="green")
-
 ```
 
-Calc of mean and median
-```{R}
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
 
+Calc of mean and median
+
+```r
 #4-4 calc the mean
 mean(impSteps$imp)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 #4-4 calc the median
 median(impSteps$imp)
+```
 
+```
+## [1] 10766.19
 ```
 Observations:
 
@@ -120,7 +152,8 @@ Observations:
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{R}
+
+```r
 #5-1 setting new data colomn with weekend and weekday values (weekend == Saterday + Sunday)
 days <- weekdays(as.Date(file$date))
 dayType = vector()
@@ -146,5 +179,6 @@ meanIntervalDayType <- aggregate(steps ~ interval + dayType,file,mean)
 names(meanIntervalDayType) <- c("interval", "daytype", "steps")
 
 xyplot(steps ~ interval | daytype, meanIntervalDayType, type = "l", layout = c(1, 2),  xlab = "Interval", ylab = "Number of steps")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
